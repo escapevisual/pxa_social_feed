@@ -226,6 +226,9 @@ class ImportTaskUtility
                         }
                         break;
                     case Token::FACEBOOK_OAUTH2:
+
+                        $this->updateFacebookToken($configuration);
+
                         $media = $this->getInstagramFeedUsingGraphApi($configuration);
 
                         if (!$media) {
@@ -492,6 +495,28 @@ class ImportTaskUtility
 
     /**
      * @param Configuration $configuration
+     * @throws \Facebook\Exceptions\FacebookSDKException
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
+     */
+    protected function updateFacebookToken(Configuration $configuration) : void
+    {
+        /** @var FacebookSDKUtility $facebookSDKUtility */
+        $facebookSDKUtility = GeneralUtility::makeInstance(
+            FacebookSDKUtility::class,
+            $configuration->getToken()
+        );
+
+        // Update the token
+        $newToken = $facebookSDKUtility->getNewToken();
+        $configuration->getToken()->setCredential('accessToken', $newToken);
+        $this->configurationRepository->update($configuration);
+        $this->objectManager->get(PersistenceManager::class)->persistAll();
+    }
+
+    /**
+     * @param Configuration $configuration
+     * @param int|null $limit
      * @return array|bool
      */
     protected function getInstagramFeedUsingGraphApi(Configuration $configuration, int $limit = null)

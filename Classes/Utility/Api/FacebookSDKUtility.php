@@ -54,7 +54,17 @@ class FacebookSDKUtility
         $config = $configurationUtility->getConfiguration();
         return $config['settings']['facebookGraphVersion']
             ? $config['settings']['facebookGraphVersion']
-            : 'v3.0';
+            : 'v3.1';
+    }
+
+    /**
+     * @return \Facebook\Authentication\AccessToken
+     * @throws \Facebook\Exceptions\FacebookSDKException
+     */
+    public function getNewToken()
+    {
+        $oAuth2Client = $this->fb->getOAuth2Client();
+        return $oAuth2Client->getLongLivedAccessToken($this->accessToken);
     }
 
     /**
