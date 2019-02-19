@@ -692,35 +692,37 @@ class ImportTaskUtility
         //adding each record from array to database
         foreach ($data as $rawData) {
             /** @var Feed $facebookItem */
-            if ($facebookItem = $this->feedRepository->findOneByExternalIdentifier(
-                $rawData['id'],
-                $configuration->getFeedStorage()
-            )) {
-                if ($facebookItem->getUpdateDate() < strtotime($rawData['updated_time'])) {
+            if ($rawData['is_published'] === TRUE && $rawData['privacy']['value'] === 'EVERYONE') {
+                if ($facebookItem = $this->feedRepository->findOneByExternalIdentifier(
+                    $rawData['id'],
+                    $configuration->getFeedStorage()
+                )) {
+                    if ($facebookItem->getUpdateDate() < strtotime($rawData['updated_time'])) {
+                        $this->setFacebookData($facebookItem, $rawData);
+                        $facebookItem->setUpdateDate(strtotime($rawData['updated_time']));
+                    }
+                } else {
+                    /** @var Feed $feedItem */
+                    $facebookItem = $this->objectManager->get(Feed::class);
                     $this->setFacebookData($facebookItem, $rawData);
+
+                    $post_array = GeneralUtility::trimExplode('_', $rawData['id'], 1);
+                    $facebookItem->setPostUrl('https://facebook.com/' . $post_array[0] . '/posts/' . $post_array[1]);
+                    $facebookItem->setPostDate(\DateTime::createFromFormat(\DateTime::ISO8601, $rawData['created_time']));
+                    $facebookItem->setConfiguration($configuration);
                     $facebookItem->setUpdateDate(strtotime($rawData['updated_time']));
+                    $facebookItem->setExternalIdentifier($rawData['id']);
+                    $facebookItem->setPid($configuration->getFeedStorage());
+                    $facebookItem->setType((string) Token::FACEBOOK);
                 }
-            } else {
-                /** @var Feed $feedItem */
-                $facebookItem = $this->objectManager->get(Feed::class);
-                $this->setFacebookData($facebookItem, $rawData);
 
-                $post_array = GeneralUtility::trimExplode('_', $rawData['id'], 1);
-                $facebookItem->setPostUrl('https://facebook.com/' . $post_array[0] . '/posts/' . $post_array[1]);
-                $facebookItem->setPostDate(\DateTime::createFromFormat(\DateTime::ISO8601, $rawData['created_time']));
-                $facebookItem->setConfiguration($configuration);
-                $facebookItem->setUpdateDate(strtotime($rawData['updated_time']));
-                $facebookItem->setExternalIdentifier($rawData['id']);
-                $facebookItem->setPid($configuration->getFeedStorage());
-                $facebookItem->setType((string)Token::FACEBOOK);
-            }
+                $facebookItem->setLikes(intval($rawData['likes']['summary']['total_count']));
 
-            $facebookItem->setLikes(intval($rawData['likes']['summary']['total_count']));
-
-            if ($facebookItem->getUid()) {
-                $this->feedRepository->update($facebookItem);
-            } else {
-                $this->feedRepository->add($facebookItem);
+                if ($facebookItem->getUid()) {
+                    $this->feedRepository->update($facebookItem);
+                } else {
+                    $this->feedRepository->add($facebookItem);
+                }
             }
         }
     }
