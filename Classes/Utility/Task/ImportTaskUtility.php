@@ -111,10 +111,10 @@ class ImportTaskUtility
                         //getting data array from facebook graph api json result
                         // @codingStandardsIgnoreStart
                         $url = sprintf(
-                            self::FACEBOOK_API_URL . '%s/posts/?fields=likes.summary(true).limit(0),message,full_picture,attachments,created_time,is_expired,is_hidden,is_published,updated_time,privacy&limit=%d&access_token=%s|%s',
+                            self::FACEBOOK_API_URL . '%s/posts/?fields=likes.summary(true).limit(0),message,full_picture,attachments,created_time,is_expired,is_hidden,is_published,updated_time,privacy&limit=%d&access_token=%s',
                             $configuration->getSocialId(),
                             $configuration->getFeedsLimit(),
-                            $configuration->getToken()->getCredential('appId'),
+                            // $configuration->getToken()->getCredential('appId'),
                             $configuration->getToken()->getCredential('appSecret')
                         );
                         // @codingStandardsIgnoreEnd
