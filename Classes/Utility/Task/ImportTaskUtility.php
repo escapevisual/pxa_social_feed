@@ -110,8 +110,11 @@ class ImportTaskUtility
                     case Token::FACEBOOK:
                         //getting data array from facebook graph api json result
                         // @codingStandardsIgnoreStart
-                        $url = sprintf(
-                            self::FACEBOOK_API_URL . '%s/posts/?fields=likes.summary(true).limit(0),message,full_picture,attachments,created_time,is_expired,is_hidden,is_published,updated_time,privacy&limit=%d&access_token=%s|%s',
+                        // self::FACEBOOK_API_URL . '%s/posts/?fields=likes.summary(true).limit(0),message,full_picture,attachments,created_time,is_expired,is_hidden,is_published,updated_time,privacy&limit=%d&access_token=%s|%s',
+                    $url = sprintf(
+                            // Nutzer-Token / kein Ablaufdatum
+                            self::FACEBOOK_API_URL . '%s/posts/?fields=likes.summary(true).limit(0),message,full_picture,attachments,created_time,is_expired,is_hidden,is_published,updated_time,privacy&limit=%d&access_token=EAAcAElrZCKR4BAIPMZAZA0qF0KiDaPOkJO4dnOcnLjtYZAP9zZAjkQyqziZCwibq1Rdokdv8esiYuRCGISP0OcWE8PS0dox91wtfZBJio7F6zGO8Ws3JoVTgiZCHymwaWZA6Osi4ONPxZCwZCg
+24B8jia0mseEePbzpOS0ZD',
                             $configuration->getSocialId(),
                             $configuration->getFeedsLimit(),
                             $configuration->getToken()->getCredential('appId'),
