@@ -111,10 +111,10 @@ class ImportTaskUtility
                         //getting data array from facebook graph api json result
                         // @codingStandardsIgnoreStart
                         // self::FACEBOOK_API_URL . '%s/posts/?fields=likes.summary(true).limit(0),message,full_picture,attachments,created_time,is_expired,is_hidden,is_published,updated_time,privacy&limit=%d&access_token=%s|%s',
-                    $url = sprintf(
+                        $url = sprintf(
+                            // Hinweis: wenn die Berechtigungsstufe "Page Public Content Access" freigegeben ist, muss der access_token mit einer Pipe getrennt sein
                             // Nutzer-Token / kein Ablaufdatum
-                            self::FACEBOOK_API_URL . '%s/posts/?fields=likes.summary(true).limit(0),message,full_picture,attachments,created_time,is_expired,is_hidden,is_published,updated_time,privacy&limit=%d&access_token=EAAcAElrZCKR4BAIPMZAZA0qF0KiDaPOkJO4dnOcnLjtYZAP9zZAjkQyqziZCwibq1Rdokdv8esiYuRCGISP0OcWE8PS0dox91wtfZBJio7F6zGO8Ws3JoVTgiZCHymwaWZA6Osi4ONPxZCwZCg
-24B8jia0mseEePbzpOS0ZD',
+                            self::FACEBOOK_API_URL . '%s/posts/?fields=likes.summary(true).limit(0),message,full_picture,attachments,created_time,is_expired,is_hidden,is_published,updated_time,privacy&limit=%d&access_token=%s%s',
                             $configuration->getSocialId(),
                             $configuration->getFeedsLimit(),
                             $configuration->getToken()->getCredential('appId'),
@@ -186,7 +186,7 @@ class ImportTaskUtility
                     case Token::YOUTUBE:
                         $url = sprintf(
                             self::YOUTUBE_API_URL .
-                                'search?order=date&part=snippet&type=video&maxResults=%d&channelId=%s&key=%s',
+                            'search?order=date&part=snippet&type=video&maxResults=%d&channelId=%s&key=%s',
                             $configuration->getFeedsLimit(),
                             $configuration->getSocialId(),
                             $configuration->getToken()->getCredential('apiKey')
@@ -298,7 +298,7 @@ class ImportTaskUtility
         foreach ($groupedFeed as $configurationUid => $feedGroup) {
             /**
              * @var Configuration $configuration
-             * @var Feed[] $feeds
+             * @var Feed[]        $feeds
              */
             extract($feedGroup, null);
             $token = $configuration->getToken();
@@ -359,7 +359,7 @@ class ImportTaskUtility
     }
 
     /**
-     * @param array $data
+     * @param array         $data
      * @param Configuration $configuration
      * @return void
      */
@@ -395,7 +395,7 @@ class ImportTaskUtility
                 $twitterFeed->setConfiguration($configuration);
                 $twitterFeed->setExternalIdentifier($rawData['id_str']);
                 $twitterFeed->setPid($configuration->getFeedStorage());
-                $twitterFeed->setType((string)Token::TWITTER);
+                $twitterFeed->setType((string) Token::TWITTER);
             }
 
             //take likes of original tweet if it's retweet
@@ -413,10 +413,10 @@ class ImportTaskUtility
     }
 
     /**
-     * @param array $data
+     * @param array         $data
      * @param Configuration $configuration
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @return void
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      */
     private function saveInstagramFeed($data, Configuration $configuration)
     {
@@ -440,7 +440,7 @@ class ImportTaskUtility
                 $instagram->setConfiguration($configuration);
                 $instagram->setExternalIdentifier($rawData['id']);
                 $instagram->setPid($configuration->getFeedStorage());
-                $instagram->setType((string)Token::INSTAGRAM_OAUTH2);
+                $instagram->setType((string) Token::INSTAGRAM_OAUTH2);
             }
 
             // Add/update instagram feed data gotten from facebook
@@ -452,7 +452,7 @@ class ImportTaskUtility
     }
 
     /**
-     * @param $data
+     * @param               $data
      * @param Configuration $configuration
      */
     private function saveGraphInstagramFeed($data, Configuration $configuration)
@@ -477,7 +477,7 @@ class ImportTaskUtility
                 $instagram->setPid($configuration->getFeedStorage());
 
                 // Set type
-                $instagram->setType((string)Token::FACEBOOK_OAUTH2);
+                $instagram->setType((string) Token::FACEBOOK_OAUTH2);
             }
 
             // Add/update instagram feed data gotten from facebook
@@ -521,7 +521,7 @@ class ImportTaskUtility
 
         // Get media
         try {
-            $media  = $facebookSDKUtility->getInstagramFeed(
+            $media = $facebookSDKUtility->getInstagramFeed(
                 $instagramAccountId,
                 $limit ?? $configuration->getFeedsLimit()
             );
@@ -539,7 +539,7 @@ class ImportTaskUtility
 
     /**
      * @param Configuration $configuration
-     * @param int $limit
+     * @param int           $limit
      * @return array
      * @throws \Facebook\Exceptions\FacebookSDKException
      */
@@ -651,7 +651,7 @@ class ImportTaskUtility
         $record->setExternalIdentifier($data['id']);
 
         // Set likes
-        $record->setLikes((int)$data['like_count']);
+        $record->setLikes((int) $data['like_count']);
 
         return $record;
     }
@@ -679,16 +679,16 @@ class ImportTaskUtility
         $record->setPostUrl($data['link']);
 
         // Likes
-        $record->setLikes((int)$data['likes']['count']);
+        $record->setLikes((int) $data['likes']['count']);
 
         return $record;
     }
 
     /**
-     * @param array $data
+     * @param array         $data
      * @param Configuration $configuration
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @return void
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      */
     private function updateFacebookFeed($data, Configuration $configuration)
     {
@@ -731,7 +731,7 @@ class ImportTaskUtility
     }
 
     /**
-     * @param Feed $feed
+     * @param Feed  $feed
      * @param array $rawData
      */
     private function setFacebookData(Feed $feed, $rawData)
@@ -749,7 +749,7 @@ class ImportTaskUtility
     }
 
     /**
-     * @param $data
+     * @param               $data
      * @param Configuration $configuration
      */
     private function updateYoutubeFeed($data, Configuration $configuration)
@@ -776,7 +776,7 @@ class ImportTaskUtility
                 $youtubeItem->setTitle($rawData['snippet']['title']);
                 $youtubeItem->setUpdateDate($youtubeItem->getPostDate()->format('U'));
                 $youtubeItem->setConfiguration($configuration);
-                $youtubeItem->setType((string)Token::YOUTUBE);
+                $youtubeItem->setType((string) Token::YOUTUBE);
                 $youtubeItem->setPid($configuration->getFeedStorage());
 
                 $this->feedRepository->add($youtubeItem);
